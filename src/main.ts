@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core'
 import * as chalk from 'chalk'
-import { AppModule } from '@modules/app.module'
 import { AppExceptionFilter } from '@shared/filters'
-import { LoggerInterceptor, TransformInterceptor, ErrorInterceptor } from '@shared/interceptors'
+import { TransformInterceptor } from '@shared/interceptors'
+import { AppModule } from '@modules/app.module'
 
 const PORT = process.env.PORT || 8080
 
@@ -11,9 +11,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/v1')
   app.useGlobalFilters(new AppExceptionFilter())
   app.useGlobalInterceptors(
-    new LoggerInterceptor(),
-    new TransformInterceptor(),
-    new ErrorInterceptor()
+    new TransformInterceptor()
   )
   await app.listen(PORT)
 }
