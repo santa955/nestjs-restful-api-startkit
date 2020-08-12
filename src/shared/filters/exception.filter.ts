@@ -1,7 +1,12 @@
-import { ExceptionFilter, Catch, HttpException, ArgumentsHost, HttpStatus } from '@nestjs/common'
+import { ExceptionFilter, Logger, LoggerService, Inject, Catch, HttpException, ArgumentsHost, HttpStatus } from '@nestjs/common'
 
 @Catch()
 export class AppExceptionFilter implements ExceptionFilter {
+  constructor(
+    @Inject(Logger)
+    private readonly logger: LoggerService
+  ) { }
+
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse()
@@ -11,6 +16,7 @@ export class AppExceptionFilter implements ExceptionFilter {
     let message = exception.message || 'INTERNAL SERVER ERROR'
 
     console.error(exception.stack)
+    this.logger.error(exception.stack)
     if (exception instanceof HttpException) {
       status = exception.getStatus()
     }

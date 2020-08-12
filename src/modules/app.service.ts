@@ -1,8 +1,16 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger, LoggerService, Inject } from '@nestjs/common'
 
 @Injectable()
 export class AppService {
-  getHello(): string {
+  constructor(
+    @Inject(Logger)
+    private readonly logger: LoggerService
+  ) { }
+
+  async getHello(): Promise<string> {
+    let promise = await new Promise((r, j) => {
+      setTimeout(() => r(), 2000)
+    })
     return 'Hello World!'
   }
 }
