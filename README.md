@@ -10,6 +10,10 @@ This implementation uses the BFF pattern, leveraging NestJS as the primary frame
 $ npm install
 ```
 
+## Config
+- Rename the file `.env.sample`  to `.env` in the project root.
+- Config the database info in `.env`.
+
 ## Running the app
 
 ```bash

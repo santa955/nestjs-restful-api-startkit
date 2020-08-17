@@ -11,6 +11,7 @@ export class AppService {
     let promise = await new Promise((r, j) => {
       setTimeout(() => r(), 2000)
     })
+    this.logger.log('debug info test')
     return 'Hello World!'
   }
 }

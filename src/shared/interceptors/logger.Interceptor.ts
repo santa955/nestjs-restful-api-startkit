@@ -1,4 +1,5 @@
 import { Injectable, NestInterceptor, CallHandler, ExecutionContext, Inject, Logger, LoggerService } from '@nestjs/common'
+import { Request } from 'express'
 import { Observable } from 'rxjs'
 import { tap } from 'rxjs/operators'
 
@@ -14,9 +15,12 @@ export class LoggerInterceptor implements NestInterceptor {
     const targetName = context.getHandler().name
     const req = http.getRequest()
     const startTime = Date.now()
-    this.logger.log({message:'Before...', xx: 'ccc'})
-    // this.logger.log({ req })
-    // this.logger.log(targetName, req.originalUrl, req.ip)
+
+    let { method, headers, path, query } = req
+    let { host, referrer, body } = headers
+
+    this.logger.log({ host, method, path, referrer, query, body })
+
     return next
       .handle()
       .pipe(
