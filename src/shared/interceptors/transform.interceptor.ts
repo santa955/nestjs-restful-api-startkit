@@ -3,6 +3,7 @@ import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
 // nestjs 执行顺序
+// https://docs.nestjs.com/faq/request-lifecycle
 // 客户端请求 ---> 中间件 ---> 守卫 ---> 拦截器之前 ---> 管道 ---> 控制器处理并响应 ---> 拦截器之后 ---> 过滤器
 
 @Injectable()

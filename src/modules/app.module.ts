@@ -9,13 +9,12 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { DetailModule } from '@modules/detail/detail.module'
 
+// root is dist dir in project
 const ROOT = resolve(__dirname, '../')
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -49,7 +48,7 @@ const ROOT = resolve(__dirname, '../')
   ],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
+  configure (consumer: MiddlewareConsumer) {
     // consumer
     //   .apply(LoggerMiddleware)
     //   .forRoutes({ path: '*', method: RequestMethod.ALL })
