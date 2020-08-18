@@ -9,7 +9,6 @@ export class ErrorInterceptor implements NestInterceptor {
       .handle()
       .pipe(
         catchError(err => {
-          console.log(err)
           return throwError(new HttpException(err.message, err.status || HttpStatus.INTERNAL_SERVER_ERROR))
         })
       )

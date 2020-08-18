@@ -16,7 +16,7 @@ export class AppExceptionFilter implements ExceptionFilter {
     let message = exception.message || 'INTERNAL SERVER ERROR'
 
     console.error(exception.stack)
-    this.logger.error(exception.stack)
+    this.logger.error(exception)
     if (exception instanceof HttpException) {
       status = exception.getStatus()
     }

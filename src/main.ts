@@ -1,15 +1,17 @@
 import { NestFactory } from '@nestjs/core'
 import { ConfigService } from '@nestjs/config'
 import * as chalk from 'chalk'
+import { WINSTON_MODULE_NEST_PROVIDER } from '@libs/winston'
 import { TransformInterceptor } from '@shared/interceptors'
 import { AppModule } from '@modules/app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, { logger: false })
   const configService = app.get(ConfigService)
   const port = configService.get('PORT', 3000)
   const prefix = configService.get('API_VERSION', '')
 
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
   app.setGlobalPrefix(`/${prefix}`)
   app.useGlobalInterceptors(new TransformInterceptor())
   await app.listen(port)
