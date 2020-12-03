@@ -1,4 +1,4 @@
-import { Module, Logger, NestModule, MiddlewareConsumer } from '@nestjs/common'
+import { Module, Logger, NestModule, MiddlewareConsumer, Scope } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -93,8 +93,13 @@ const LOGGER_PATH = resolve(ROOT, '../logs')
     //   provide: APP_INTERCEPTOR,
     //   useClass: LoggerInterceptor,
     // },
+    //nestjs Scope.REQUEST service inject  exception filter
+    //TODO: https://github.com/nestjs/nest/issues/2130
+    //https://github.com/nestjs/nest/issues/1987
+    // https://github.com/nestjs/nest/issues/1916
     {
       provide: APP_FILTER,
+      scope: Scope.REQUEST,
       useClass: AppExceptionFilter,
     },
     Logger,

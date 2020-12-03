@@ -1,12 +1,10 @@
-import { Injectable, Inject, Get } from '@nestjs/common'
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston'
-import { Logger } from 'winston'
+import { Injectable} from '@nestjs/common'
+import { LoggerService } from '@libs/utils/logger.service'
 
 @Injectable()
 export class AppService {
   constructor(
-    @Inject(WINSTON_MODULE_PROVIDER)
-    private readonly logger: Logger
+    private readonly logger: LoggerService
   ) { }
 
   async getHello (): Promise<string> {

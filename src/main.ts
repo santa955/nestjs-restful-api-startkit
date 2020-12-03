@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core'
 import { ConfigService } from '@nestjs/config'
 import * as chalk from 'chalk'
-import { WINSTON_MODULE_NEST_PROVIDER } from '@libs/winston'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 import { TransformInterceptor } from '@shared/interceptors'
 import { AppModule } from '@modules/app.module'
 
-async function bootstrap() {
+async function bootstrap () {
   const app = await NestFactory.create(AppModule)
   const configService = app.get(ConfigService)
   const port = configService.get('PORT', 3000)
