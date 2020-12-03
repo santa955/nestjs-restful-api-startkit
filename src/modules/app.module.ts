@@ -2,14 +2,17 @@ import { Module, Logger, NestModule, MiddlewareConsumer } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { resolve, join } from 'path'
+import { resolve } from 'path'
 import * as winston from 'winston'
-import { WinstonModule } from '@app/libs/winston'
+import { WinstonModule } from 'nest-winston'
 import { AppExceptionFilter } from '@shared/filters'
-import { LoggerInterceptor } from '@app/shared/interceptors'
-import { isObject } from '@utility/index'
+import { LoggerInterceptor } from '@shared/interceptors'
+import { LoggerMiddleware } from '@shared/middlewares'
+import * as WinstonDailyRotateFile from 'winston-daily-rotate-file'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { UtilsModule } from '@libs/utils/utils.module'
+
 import { DetailModule } from '@modules/detail/detail.module'
 
 // root is dist dir in project
@@ -36,42 +39,60 @@ const LOGGER_PATH = resolve(ROOT, '../logs')
     WinstonModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        level: 'info',
-        format: winston.format.combine(
-          winston.format.timestamp(),
-          winston.format.errors({ stack: true }),
-          winston.format.json(),
-          winston.format.printf((param) => {
-            let { app, level, message, timestamp, context } = param
-            let params = message as any
-            if (isObject(params)) {
-              return JSON.stringify({ app, context, level, ...params, timestamp })
-            }
-            return JSON.stringify(param)
-          })
-        ),
-        defaultMeta: { app: configService.get('APP_NAME') },
-        transports: [
-          new winston.transports.Console(),
-          new winston.transports.File({
-            filename: join(LOGGER_PATH, '/error.log'),
-            level: 'error',
+      useFactory: (configService: ConfigService) => {
+        const env = configService.get('APP_ENV')
+        const app = configService.get('APP_NAME')
+        const dir = env === 'production' ? `/var/log/${app}` : LOGGER_PATH
+        const options = {
+          dirname: dir,
+          datePattern: 'YYYY-MM-DD',
+          zippedArchive: true,
+          maxSize: '20m',
+          maxFiles: '30d'
+        }
+        let transports: Array<any> = [
+          new WinstonDailyRotateFile({
+            ...options,
+            filename: `${app}-access-%DATE%.log`,
+            level: 'info'
           }),
-          new winston.transports.File({ level: 'info', filename: join(LOGGER_PATH, '/access.log') }),
-        ],
-      })
+          new WinstonDailyRotateFile({
+            ...options,
+            filename: `${app}-error-%DATE%.log`,
+            level: 'error'
+          })
+        ]
+        if ('development' === env) {
+          transports.push(new winston.transports.Console())
+        }
+
+        return {
+          level: 'info',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.errors({ stack: true }),
+            winston.format.json(),
+            winston.format.printf((param) => {
+              let { timestamp, level, message, ...meta } = param
+              return JSON.stringify({ level, message, ...meta, timestamp })
+            })
+          ),
+          defaultMeta: { appname: app },
+          transports,
+        }
+      }
     }),
+    UtilsModule,
     DetailModule
   ],
   controllers: [
     AppController,
   ],
   providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggerInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: LoggerInterceptor,
+    // },
     {
       provide: APP_FILTER,
       useClass: AppExceptionFilter,
@@ -81,9 +102,7 @@ const LOGGER_PATH = resolve(ROOT, '../logs')
   ],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // consumer
-    //   .apply(LoggerMiddleware)
-    //   .forRoutes({ path: '*', method: RequestMethod.ALL })
+  configure (consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggerMiddleware).forRoutes('*')
   }
 }

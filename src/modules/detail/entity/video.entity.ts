@@ -66,7 +66,7 @@ export class VideoEntity {
   actors: string
 
   @Column()
-  director: string
+  directors: string
 
   @Column()
   language: string

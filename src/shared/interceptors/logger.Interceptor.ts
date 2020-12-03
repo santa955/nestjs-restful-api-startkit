@@ -1,36 +1,42 @@
-import { Injectable, NestInterceptor, CallHandler, ExecutionContext, Inject, Logger, LoggerService } from '@nestjs/common'
+import { Injectable, NestInterceptor, CallHandler, ExecutionContext, Inject } from '@nestjs/common'
 import { Observable } from 'rxjs'
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston'
+import { Logger } from 'winston'
 import { tap } from 'rxjs/operators'
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
   constructor(
-    @Inject(Logger)
-    private readonly logger: LoggerService
+    @Inject(WINSTON_MODULE_PROVIDER)
+    private readonly logger: Logger
   ) { }
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept (context: ExecutionContext, next: CallHandler): Observable<any> {
     const http = context.switchToHttp()
-    const targetName = context.getClass().name
     const req = http.getRequest()
     const res = http.getResponse()
     const startTime = Date.now()
-
     let { method, headers, path, query, body, headers: { host } } = req
-    let reqLog = { host, method, path, query, body, headers }
-
-    this.logger.log({ message: 'Request', ...reqLog }, targetName)
+    let log: object = {
+      method: method.toLocaleUpperCase(),
+      url: `${host}${path}`,
+      body,
+      query,
+      headers,
+      message: 'Request'
+    }
+    this.logger.info(log)
 
     return next
       .handle()
       .pipe(
         tap(() => {
-          return this.logger.log({
+          this.logger.info({
+            ...log,
             message: 'Response',
-            ...reqLog,
             statusCode: res.statusCode,
             responseTime: Date.now() - startTime
-          }, targetName)
+          })
         })
       )
   }
