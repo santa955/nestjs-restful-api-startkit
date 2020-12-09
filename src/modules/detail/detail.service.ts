@@ -21,7 +21,7 @@ export class DetailService {
     if (!video) {
       return new VideoEntity()
     }
-    this.logger.info('videoId', video)
+    this.logger.info('get video detail complete')
     return video
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { LoggerService } from '@libs/utils/logger.service'
 
 @Injectable()
@@ -10,7 +10,7 @@ export class AppService {
   async getHello (): Promise<string> {
     await new Promise((r, j) => {
       this.logger.info('querying delay 2s...')
-      setTimeout(() => r(), 2000)
+      setTimeout(() => r(true), 2000)
     })
     this.logger.info('Hello World')
     return 'Hello World!'

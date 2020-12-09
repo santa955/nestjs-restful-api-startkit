@@ -1,19 +1,19 @@
-import { Module, Logger, NestModule, MiddlewareConsumer, Scope } from '@nestjs/common'
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
+import { Module, Logger, NestModule, MiddlewareConsumer } from '@nestjs/common'
+import { APP_FILTER } from '@nestjs/core'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { resolve } from 'path'
 import * as winston from 'winston'
 import { WinstonModule } from 'nest-winston'
-import { AppExceptionFilter } from '@shared/filters'
-import { LoggerInterceptor } from '@shared/interceptors'
-import { LoggerMiddleware } from '@shared/middlewares'
 import * as WinstonDailyRotateFile from 'winston-daily-rotate-file'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
+import { AppExceptionFilter } from '@shared/filters'
+import { LoggerMiddleware, MetaMiddleware } from '@shared/middlewares'
 import { UtilsModule } from '@libs/utils/utils.module'
 
 import { DetailModule } from '@modules/detail/detail.module'
+
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
 
 // root is dist dir in project
 const ROOT = resolve(__dirname, '../')
@@ -89,17 +89,8 @@ const LOGGER_PATH = resolve(ROOT, '../logs')
     AppController,
   ],
   providers: [
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: LoggerInterceptor,
-    // },
-    //nestjs Scope.REQUEST service inject  exception filter
-    //TODO: https://github.com/nestjs/nest/issues/2130
-    //https://github.com/nestjs/nest/issues/1987
-    // https://github.com/nestjs/nest/issues/1916
     {
       provide: APP_FILTER,
-      scope: Scope.REQUEST,
       useClass: AppExceptionFilter,
     },
     Logger,
@@ -108,6 +99,6 @@ const LOGGER_PATH = resolve(ROOT, '../logs')
 })
 export class AppModule implements NestModule {
   configure (consumer: MiddlewareConsumer): void {
-    consumer.apply(LoggerMiddleware).forRoutes('*')
+    consumer.apply(MetaMiddleware, LoggerMiddleware).forRoutes('*')
   }
 }

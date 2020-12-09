@@ -21,7 +21,7 @@ export class LoggerMiddleware implements NestMiddleware {
     res.on('close', () => {
       const common = this.loggerService.getAccessLogger()
       const { statusCode } = res
-      const resLength = res.get('content-length')
+      const resLength = res.get('content-length') || 0
       const serverheaders = JSON.stringify(res.getHeaders())
       const responsetime = Date.now() - start
       const log = {
