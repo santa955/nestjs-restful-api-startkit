@@ -12,33 +12,26 @@ export class LoggerService {
     @Inject(REQUEST)
     private readonly request: Request,
     @Inject(WINSTON_MODULE_PROVIDER)
-    private readonly logger: Logger,
-    private readonly utilsService: UtilsService,
+    private readonly logger: Logger
   ) { }
 
   public info (message, meta = {}) {
-    let log: any = { ...this.getAppLogger(), message }
-    let keys = Object.keys(meta)
-    if (keys.length) log = { ...log, detail: JSON.stringify(meta) }
+    let log: any = { ...this.getAppLogger(), message, ...meta }
     this.logger.info(log)
   }
 
   public warn (message, meta = {}) {
-    let log: any = { ...this.getAppLogger(), message }
-    let keys = Object.keys(meta)
-    if (keys.length) log = { ...log, detail: JSON.stringify(meta) }
-    this.logger.warn({ log })
+    let log: any = { ...this.getAppLogger(), message, ...meta }
+    this.logger.warn(log)
   }
 
   public error (message, stack = '', meta = {}) {
     let common = this.getAppLogger()
-    let log: any = { ...common, stack, message }
-    let keys = Object.keys(meta)
-    if (keys.length) log = { ...log, detail: JSON.stringify(meta) }
+    let log: any = { ...common, stack, message, ...meta }
     this.logger.error(log)
   }
 
-  public getAccessLogger (): object {
+  private getAccessLogger (): object {
     const req = this.request
     const { method, headers, hostname, originalUrl, query, body } = req
     const state = (req as any).state || {}
