@@ -15,19 +15,29 @@ export class LoggerService {
     private readonly logger: Logger
   ) { }
 
+  public access (message, meta = {}) {
+    let log: any = { ...this.getAccessLogger(), message, ...meta }
+    this.logger.info(log)
+  }
+
   public info (message, meta = {}) {
-    let log: any = { ...this.getAppLogger(), message, ...meta }
+    let log: any = { ...this.getAppLogger(), message }
+    let keys = Object.keys(meta)
+    if (keys.length) log = { ...log, meta: JSON.stringify(meta) }
     this.logger.info(log)
   }
 
   public warn (message, meta = {}) {
-    let log: any = { ...this.getAppLogger(), message, ...meta }
+    let log: any = { ...this.getAppLogger(), message }
+    let keys = Object.keys(meta)
+    if (keys.length) log = { ...log, meta: JSON.stringify(meta) }
     this.logger.warn(log)
   }
 
   public error (message, stack = '', meta = {}) {
-    let common = this.getAppLogger()
-    let log: any = { ...common, stack, message, ...meta }
+    let log: any = { ...this.getAppLogger(), stack, message }
+    let keys = Object.keys(meta)
+    if (keys.length) log = { ...log, meta: JSON.stringify(meta) }
     this.logger.error(log)
   }
 

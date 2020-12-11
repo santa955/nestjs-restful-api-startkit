@@ -25,7 +25,7 @@ export class LoggerMiddleware implements NestMiddleware {
         serverbytes: resLength,
         responsetime
       }
-      this.logger.info('@app request logs@', log)
+      this.logger.access('@app request logs@', log)
     })
     next()
   }
