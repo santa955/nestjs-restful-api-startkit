@@ -8,8 +8,10 @@ import { WinstonModule } from 'nest-winston'
 import * as WinstonDailyRotateFile from 'winston-daily-rotate-file'
 import { AppExceptionFilter } from '@shared/filters'
 import { LoggerMiddleware, MetaMiddleware } from '@shared/middlewares'
-import { UtilsModule } from '@libs/utils/utils.module'
+import { UtilsModule } from '@common/utils/utils.module'
 
+import { AuthModule } from '@modules/auth/auth.module'
+import { UserModule } from '@modules/user/user.module'
 import { DetailModule } from '@modules/detail/detail.module'
 
 import { AppController } from './app.controller'
@@ -83,6 +85,8 @@ const LOGGER_PATH = resolve(ROOT, '../logs')
       }
     }),
     UtilsModule,
+    AuthModule,
+    UserModule,
     DetailModule
   ],
   controllers: [

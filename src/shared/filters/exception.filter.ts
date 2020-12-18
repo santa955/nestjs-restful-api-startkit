@@ -2,7 +2,7 @@ import { Inject, ArgumentsHost, HttpStatus } from '@nestjs/common'
 import { BaseExceptionFilter } from '@nestjs/core'
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston'
 import { Logger } from 'winston'
-import { UtilsService } from '@libs/utils/utils.service'
+import { UtilsService } from '@common/utils/utils.service'
 
 /**
  * @class System Exception

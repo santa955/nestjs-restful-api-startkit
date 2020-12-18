@@ -13,7 +13,7 @@
     "incremental": true,
     "paths": {
       "@app/*": ["src/*"],
-      "@libs/*": ["src/libs/*"],
+      "@common/*": ["src/common/*"],
       "@utility/*": ["src/utility/*"],
       "@modules/*": ["src/modules/*"],
       "@shared/*": ["src/shared/*"]

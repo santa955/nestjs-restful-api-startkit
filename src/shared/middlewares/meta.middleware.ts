@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { UtilsService } from '@libs/utils/utils.service'
+import { UtilsService } from '@common/utils/utils.service'
 import * as os from 'os'
 
 @Injectable()

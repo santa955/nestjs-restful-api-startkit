@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core'
 import { ConfigService } from '@nestjs/config'
 import * as chalk from 'chalk'
+import * as cookieParser from 'cookie-parser'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 import { TransformInterceptor } from '@shared/interceptors'
 import { AppModule } from '@modules/app.module'
@@ -12,6 +13,7 @@ async function bootstrap () {
   const prefix = configService.get('API_VERSION', '')
 
   // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
+  app.use(cookieParser())
   app.setGlobalPrefix(`/${prefix}`)
   app.useGlobalInterceptors(new TransformInterceptor())
   await app.listen(port)
